@@ -223,7 +223,7 @@ background : white ;
 }
 
 .descript2 #col1 {
-	
+ 
 }
 
 .descript2 #col1 img {
@@ -250,10 +250,13 @@ background : white ;
 /*display: flex;
 align-items: center;*/
 text-align: center;
+
+
 }
+
       
 .descript2 #col2 .icon {
-margin-right: 10px;
+
 }
 
 /* Pied de page */
@@ -266,4 +269,32 @@ footer {
 
 footer p {
 	margin: 0;
+}
+
+
+
+/* Style stat2 */
+
+#image-gauche {
+max-width: 50%;
+height: auto;
+object-fit: contain;
+}
+#image-droite {
+max-width: 50%;
+height: auto;
+object-fit: contain;
+}
+#conteneur {
+width: 80%;
+height: 200px;
+background-color: #eee;
+display: flex;
+align-items: center;
+margin-left: 150px;
+}
+#text {
+font-size: 24px;
+font-weight: bold;
+text-align: center;
 }
