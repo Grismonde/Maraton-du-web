@@ -1,0 +1,74 @@
+*{
+    box-sizing: border-box;
+    pad: 0;
+    margin: 0;
+}
+.container {
+    display: flex;
+}
+
+#map {
+    height: 100vh;
+    width: 75vw;
+}
+
+.siege-liste {
+    width: 25vw;
+    height: 100vw;
+    overflow: auto;
+    background: whitesmoke;
+    
+}
+
+.leaflet-popup-content-wrapper {
+    padding: 0;
+    overflow: hidden;
+}
+.leaflet-popup-content-wrapper .leaflet-popup-content {
+    margin : 0;
+}
+
+.leaflet-popup-content-wrapper h4 {
+    padding: 16px;
+    background: #466799;
+    color: #fff;
+    font-size: 16px;
+}
+
+.leaflet-popup-content-wrapper p {
+    padding: 0 16px;
+    font-size: 14px;
+    margin-bottom: 14px;
+}
+
+.siege-liste .heading {
+    background: #466799;
+    color: #fff;
+}
+
+.siege-liste .heading h2 {
+    padding: 1rem;
+}
+
+.siege-liste ul.liste {
+    padding: 0 1rem;
+    list-style-type: none;
+}
+
+.siege-liste .collectivite-item {
+    margin: 1rem 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    padding-bottom: 1rem;
+}
+
+.siege-liste li:last-child .collectivite-item {
+    border: none;
+}
+
+.siege-liste .collectivite-item a {
+    text-decoration: none;
+    font-size: 18px;
+    color: #466799;
+    font-weight: 700;
+}
+
