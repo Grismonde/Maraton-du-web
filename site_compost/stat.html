@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <title>Stat</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style2.css">
 	<script type="text/javascript" src="d3.min.js"></script>
 
 	<!--<script type="text/javascript" src="diag2.js"></script>-->
@@ -270,8 +270,8 @@
 	});
 
 	</script>
-	
 
+	
 
 </head>
 <body>
@@ -289,9 +289,116 @@
 		</nav>
 </header>
 <main>
+	<script>
+    d3.json("../Jeux_de_DD_propre.json").then(function(data3) {
+            console.log(data3);
 
-<svg id="vis"  width="650" height="600" > </svg>  
-<svg id="vis2"  width="650" height="600" > </svg> 
+            let tarifs = {
+                "TEOM": {total: 0, count: 0},
+                "TI": {total: 0, count: 0},
+                "REOM": {total: 0, count: 0}
+            };
+
+            /* Création moyenne */
+            data3.forEach(function(d) {
+                if (d.Cout !== "NaN" && tarifs.hasOwnProperty(d.Tarif)) {
+                    tarifs[d.Tarif].total += +d.Cout;
+                    tarifs[d.Tarif].count++;
+                }
+            });
+
+            let moyennesCout = {};
+            for (let tarif in tarifs) {
+                moyennesCout[tarif] = tarifs[tarif].total / tarifs[tarif].count;
+            }
+            console.log(moyennesCout);
+
+            /* Création graph */
+            let svg = d3.select("#vis3");
+            let width = +svg.attr("width");
+            let height = +svg.attr("height");
+
+            let margin = { top: 20, right: 20, bottom: 30, left: 50 };
+
+            let x = d3.scaleBand().domain(Object.keys(moyennesCout)).range([margin.left, width - margin.right]).padding(0.4);
+            let y = d3.scaleLinear().domain([0, 130]).range([height - margin.bottom, margin.top]);
+
+            svg.append("g")
+                .attr("transform", "translate(0," + (height - margin.bottom) + ")")
+                .call(d3.axisBottom(x))
+                .attr("class", "axis");
+
+            svg.append("g")
+                .attr("transform", "translate(" + margin.left + ", 0)")
+                .call(d3.axisLeft(y).tickValues(d3.range(0, 131, 10)))
+                .attr("class", "axis");
+
+            svg.selectAll(".bar")
+                .data(Object.entries(moyennesCout))
+                .join("rect")
+                .attr("class", "bar")
+                .attr("x", (d) => x(d[0]))
+                .attr("y", (d) => y(d[1]))
+                .attr("width", x.bandwidth())
+                .attr("height", (d) => height - margin.bottom - y(d[1]));
+
+    });
+</script>
+   <script>
+    d3.json("../Jeux_de_DD_propre.json").then(function(data4) {
+            console.log(data4);
+
+            let tarifs = {
+                "TEOM": {total: -426, count: 0},
+                "TI": {total: -96, count: 0},
+                "REOM": {total: 0, count: 0}
+            };
+
+            /* Création moyenne */
+            data4.forEach(function(d) {
+                if (d.Cout !== "NaN" && tarifs.hasOwnProperty(d.Tarif)) {
+                    tarifs[d.Tarif].total += +d.Cout;
+                    tarifs[d.Tarif].count++;
+                }
+            });
+
+            let moyennesCout = {};
+            for (let tarif in tarifs) {
+                moyennesCout[tarif] = tarifs[tarif].total / tarifs[tarif].count;
+            }
+            console.log(moyennesCout);
+
+            /* Création graph */
+            let svg = d3.select("#vis4");
+            let width = +svg.attr("width");
+            let height = +svg.attr("height");
+
+            let margin = { top: 20, right: 20, bottom: 30, left: 50 };
+
+            let x = d3.scaleBand().domain(Object.keys(moyennesCout)).range([margin.left, width - margin.right]).padding(0.4);
+            let y = d3.scaleLinear().domain([0, 130]).range([height - margin.bottom, margin.top]);
+
+            svg.append("g")
+                .attr("transform", "translate(0," + (height - margin.bottom) + ")")
+                .call(d3.axisBottom(x))
+                .attr("class", "axis");
+
+            svg.append("g")
+                .attr("transform", "translate(" + margin.left + ", 0)")
+                .call(d3.axisLeft(y).tickValues(d3.range(0, 131, 10)))
+                .attr("class", "axis");
+
+            svg.selectAll(".bar")
+                .data(Object.entries(moyennesCout))
+                .join("rect")
+                .attr("class", "bar")
+                .attr("x", (d) => x(d[0]))
+                .attr("y", (d) => y(d[1]))
+                .attr("width", x.bandwidth())
+                .attr("height", (d) => height - margin.bottom - y(d[1]));
+
+    });
+</script>
 
 <img id="image-gauche" src="image/D_Moustache.png" alt="Boite à moustache" />
     <img id="image-droite" src="image/Courbe.png" alt="Evolution traitement" />
@@ -330,8 +437,10 @@
       </p>
    </div>
 
-
-
+   <svg id="vis"  width="650" height="600" style="transform: translateX(100px);" > </svg>  
+   <svg id="vis2"  width="650" height="600" style="transform: translateX(200px);" > </svg> 
+   <svg id="vis3" width="600" height="600" style="border: 1px solid rgb(0, 0, 0); transform: translateX(100px);"></svg>
+   <svg id="vis4" width="600" height="600" style="border: 1px solid rgb(0, 0, 0); transform: translateX(200px);"></svg>
 
 </main>
 
