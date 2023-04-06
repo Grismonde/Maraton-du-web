@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Diagramme en bar</title>
+    <script src="d3.min.js"></script>
+    <style>
+        .bar {
+            fill: steelblue;
+        }
+
+        .axis path,
+        .axis line {
+            fill: none;
+            stroke: black;
+            shape-rendering: crispEdges;
+        }
+
+        .axis text {
+            font-family: sans-serif;
+            font-size: 11px;
+        }
+    </style>
+</head>
+<body>
+<svg id="vis" width="600" height="600" style="border: 1px solid rgb(0, 0, 0)"></svg>
+<script>
+    d3.json("Jeux_de_DD_propre.json").then(function(data) {
+            console.log(data);
+
+            let tarifs = {
+                "TEOM": {total: -426, count: 0},
+                "TI": {total: -96, count: 0},
+                "REOM": {total: 0, count: 0}
+            };
+
+            /* Création moyenne */
+            data.forEach(function(d) {
+                if (d.Cout !== "NaN" && tarifs.hasOwnProperty(d.Tarif)) {
+                    tarifs[d.Tarif].total += +d.Cout;
+                    tarifs[d.Tarif].count++;
+                }
+            });
+
+            let moyennesCout = {};
+            for (let tarif in tarifs) {
+                moyennesCout[tarif] = tarifs[tarif].total / tarifs[tarif].count;
+            }
+            console.log(moyennesCout);
+
+            /* Création graph */
+            let svg = d3.select("#vis");
+            let width = +svg.attr("width");
+            let height = +svg.attr("height");
+
+            let margin = { top: 20, right: 20, bottom: 30, left: 50 };
+
+            let x = d3.scaleBand().domain(Object.keys(moyennesCout)).range([margin.left, width - margin.right]).padding(0.4);
+            let y = d3.scaleLinear().domain([0, 130]).range([height - margin.bottom, margin.top]);
+
+            svg.append("g")
+                .attr("transform", "translate(0," + (height - margin.bottom) + ")")
+                .call(d3.axisBottom(x))
+                .attr("class", "axis");
+
+            svg.append("g")
+                .attr("transform", "translate(" + margin.left + ", 0)")
+                .call(d3.axisLeft(y).tickValues(d3.range(0, 131, 10)))
+                .attr("class", "axis");
+
+            svg.selectAll(".bar")
+                .data(Object.entries(moyennesCout))
+                .join("rect")
+                .attr("class", "bar")
+                .attr("x", (d) => x(d[0]))
+                .attr("y", (d) => y(d[1]))
+                .attr("width", x.bandwidth())
+                .attr("height", (d) => height - margin.bottom - y(d[1]));
+
+    });
+</script>
+</body>
+</html>
