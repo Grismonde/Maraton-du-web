@@ -1,0 +1,364 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>Stat</title>
+    <link rel="stylesheet" href="style.css">
+	<script type="text/javascript" src="d3.min.js"></script>
+
+	<!--<script type="text/javascript" src="diag2.js"></script>-->
+
+	<script type="text/javascript">
+// Définir les dimensions du diagramme
+	//var	width = 500;
+	//var	height = 500 ;
+
+
+		d3.json("../Jeux_de_DD_propre.json").then(function(data) {
+			//console.log(data);
+
+			var collectivites = data.map(function(d) {
+			return d["Nom de votre collectivité"];
+			});
+			console.log(collectivites);
+			var valeurs1 = data.map(function(d) {
+			return d["Nb H Collecte PAP"];
+			});
+
+			var valeurs2 = data.map(function(d) {
+			return d["Nb H Collecte PAV"];
+			});
+
+			
+		    var x = d3.scaleBand()
+			.domain(collectivites)
+			.range([0, 500])
+			.padding(0.5);
+
+			var y = d3.scaleLinear()
+			.domain([0,d3.max(data, function(d) { return d3.max([d["Nb H Collecte PAP"], d["Nb H Collecte PAV"]]);}) ])
+			.range([400, 0]);
+
+			var color = d3.scaleOrdinal()
+			.domain(collectivites)
+			.range(d3.schemeSet2);
+
+			// Créer l'axe x
+			var xAxis = d3.axisBottom(x);
+
+			// Créer l'axe y
+			var yAxis = d3.axisLeft(y)
+			.ticks(10);
+
+			var svg = d3.select("#vis");
+			//.append("svg");
+			//.attr("width", 500)
+			//.attr("height", 500);
+
+			svg.append("g")
+		    .selectAll(".bar1")
+			.data(data)
+			.enter()
+			.append("rect")
+			.attr("class", "bar1")
+			.attr("x", function(d) { return x(d["Nom de votre collectivité"]); })
+			.attr("y", function(d) { return y(d["Nb H Collecte PAP"]); })
+			.attr("width", x.bandwidth() / 2)
+			.attr("height", function(d) { return 400 - y(d["Nb H Collecte PAP"]); })
+			.attr("transform", "translate(50,0)")
+			.attr("fill", "black");
+		
+
+
+
+			 svg.append("g")
+			.selectAll(".bar2")
+			.data(data)
+			.enter()
+			.append("rect")
+			.attr("class", "bar2")
+			.attr("x", function(d) { return x(d["Nom de votre collectivité"]) + x.bandwidth() / 2; })
+			.attr("y", function(d) { return y(d["Nb H Collecte PAV"]); })
+			.attr("width", x.bandwidth() / 2)
+			.attr("height", function(d) { return 400 - y(d["Nb H Collecte PAV"]); })
+			.attr("transform", "translate(50,0)")
+			.attr("fill", "green");
+			
+
+
+			svg.append("g")
+			.attr("transform", "translate(50, 0)")
+			.call(yAxis);
+
+			// Ajouter l'axe x au diagramme
+
+		 	svg.append("g")
+			.attr("transform", "translate(50," + 400 + ")")
+			.call(xAxis); 
+
+		  // Ajouter l'axe y au diagramme
+
+			
+			svg.selectAll("text")
+			.attr("transform", "rotate(-45)")
+			.style("text-anchor", "end")
+			.attr("dx", "-.8em");
+
+			svg.append("text")
+		   .attr("x", 178)
+		   .attr("y", 30)
+		   .attr("text-anchor", "middle")
+		   .style("font-size", "15px")
+		   .style("fill","teal")
+		   .text("Visuel comparatif collecte PAP/PAV");
+	
+			
+
+			var legendContainer = d3.select("svg")
+			  .append("g")
+			  .attr("class", "legend")
+			  .attr("transform", "translate(320,50)"); // Positionnement de la légende dans le coin supérieur gauche
+
+		
+			legendContainer.append("rect")
+			  .attr("x", 0)
+			  .attr("y", 0)
+			  .attr("width", 15)
+			  .attr("height", 15)
+			  .style("fill", "black");
+
+		
+			legendContainer.append("text")
+			  .attr("x", 25)
+			  .attr("y", 15)
+			  .attr("font-size", "12px")
+			  .text("Nombre d'habitants collecte en porte à porte");
+
+			// Créer un carré pour la couleur rouge
+			legendContainer.append("rect")
+			  .attr("x", 0)
+			  .attr("y", 25)
+			  .attr("width", 15)
+			  .attr("height", 15)
+			  .style("fill", "green");
+
+			// Créer un texte pour la couleur rouge
+			legendContainer.append("text")
+			  .attr("x", 25)
+			  .attr("y", 40)
+			  .attr("font-size", "12px")
+			  .text("Nombre d'habitants collecte en point d'apport volontaire");
+
+
+			});
+
+
+	</script>
+
+	<script>
+
+	d3.json("../Jeux_de_DD_pie.json").then(function(data2) {
+		console.log(data2);
+
+		 var svg = d3.select("#vis2");
+
+		  // Configuration des paramètres du camembert D3
+		  var width = 400;
+		  var height = 400;
+		  var radius = Math.min(width, height) / 2;
+		  var colors = d3.scaleOrdinal(d3.schemeCategory10);
+
+		  // Création du camembert D3
+		  var pie = d3.pie()
+			.sort(null)
+			.value(function(d) { return d.value; });
+
+		  var arc = d3.arc()
+			.outerRadius(radius - 10)
+			.innerRadius(0);
+
+		  var svg = svg.append("svg")
+			.attr("width", width)
+			.attr("height", height)
+			.append("g")
+			.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+		  var path = svg.selectAll("path")
+			.data(pie(data2))
+			.enter().append("path")
+			.attr("d", arc)
+			.attr("fill", function(d) { return colors(d.data.name); });
+
+
+			
+			svg.append("text")
+		   .attr("x", 0)
+		   .attr("y", -191)
+		   .attr("text-anchor", "middle")
+		   .style("font-size", "12px")
+		   .style("fill","teal")
+		   .text("Répartition de quantité des types de déchets collectés");
+
+
+			
+		
+			var legendContainer2 = d3.select("#vis2")
+			  .append("g")
+			  .attr("class", "legend2")
+			  .attr("transform", "translate(400,155)"); // Positionnement de la légende dans le coin supérieur gauche
+
+		
+			legendContainer2.append("rect")
+			  .attr("x", 0)
+			  .attr("y", 0)
+			  .attr("width", 15)
+			  .attr("height", 15)
+			  .style("fill", "blue");
+
+		
+			legendContainer2.append("text")
+			  .attr("x", 25)
+			  .attr("y", 15)
+			  .attr("font-size", "12px")
+			  .text("Tonne de biodéchets à l'année");
+
+			// Créer un carré pour la couleur rouge
+			legendContainer2.append("rect")
+			  .attr("x", 0)
+			  .attr("y", 50)
+			  .attr("width", 15)
+			  .attr("height", 15)
+			  .style("fill", "orange");
+
+			// Créer un texte pour la couleur rouge
+			legendContainer2.append("text")
+			  .attr("x", 25)
+			  .attr("y", 65)
+			  .attr("font-size", "12px")
+			  .text("Tonne ordure ménagère résiduelle (OMR) à l'année ");
+
+			  	legendContainer2.append("rect")
+			  .attr("x", 0)
+			  .attr("y", 80)
+			  .attr("width", 15)
+			  .attr("height", 15)
+			  .style("fill", "green");
+
+			// Créer un texte pour la couleur rouge
+			legendContainer2.append("text")
+			  .attr("x", 25)
+			  .attr("y", 95)
+			  .attr("font-size", "12px")
+			  .text("Tonne d'emballage à l'année  ");
+
+			  	legendContainer2.append("rect")
+			  .attr("x", 0)
+			  .attr("y", 25)
+			  .attr("width", 15)
+			  .attr("height", 15)
+			  .style("fill", "red");
+
+			// Créer un texte pour la couleur rouge
+			legendContainer2.append("text")
+			  .attr("x", 25)
+			  .attr("y", 40)
+			  .attr("font-size", "12px")
+			  .text("Tonne de verre à l'année ");
+			
+					
+	});
+
+	</script>
+	
+
+
+</head>
+<body>
+
+<header>
+		
+		<nav class="navbar">
+			<a href="index.html"><img src="image/compostplus.png" alt="logo"></a>
+			<ul>
+				<li><a href="index.html">Accueil</a></li>
+				<li><a href="#">Statistiques</a></li>
+				<li><a href="Carte/page.html">Ils sont déjà menbres </a></li>
+				<li><a href="nous.html">En savoir + </a></li>
+			</ul>
+		</nav>
+</header>
+<main>
+
+<svg id="vis"  width="650" height="600" > </svg>  
+<svg id="vis2"  width="650" height="600" > </svg> 
+
+<img id="image-gauche" src="image/D_Moustache.png" alt="Boite à moustache" />
+    <img id="image-droite" src="image/Courbe.png" alt="Evolution traitement" />
+
+    <div id="conteneur">
+      <p id="text">
+		Le diagramme en boîte des biodéchets par typologie montre que les communautés de 
+		communes intermédiaires et peu denses ont des similitudes, contrairement aux 
+		communautés de communes densément peuplées. Globalement, ces dernières génèrent 
+		beaucoup moins de biodéchets. Les raisons de cette différence ne sont pas connues, 
+		mais il est essentiel de prendre en compte ces résultats si vous envisagez la mise en 
+		place d'un système de tri des biodéchets.   </p> </div>
+	
+	<div id="conteneur2">
+		<p id="text2">
+		Quant à l'évolution de la collecte des déchets par catégorie, 
+		le graphique ci-dessous provient d'une communauté de communes ayant instauré 
+		son système de tri en 2002. Nous pouvons constater qu'il faut environ deux ans 
+		pour que la tendance se stabilise, même si dans les années qui suivent, elle 
+		continue de croître lentement.      </p>
+    </div>
+
+
+	<img id="val" src="image/Clustering.png" alt="Clustering" />
+    <div id="conteneur3">
+      <p id="text3">
+		Le graphique ci-dessus représente un graphique de clustering. 
+		Sa compréhension peut être difficile, c'est pourquoi je vais tenter de 
+		l'expliquer. Nous avons voulu tester la possibilité de retrouver les typologies 
+		sans indiquer leur label en utilisant les autres données. Cependant, 
+		avec une précision de seulement 50%, les résultats sont peu concluants. 
+		Ce résultat concerne surtout les communautés intermédiaires et denses, en 
+		raison du manque de données dont nous disposons. Par conséquent, nous vous 
+		recommandons d'être particulièrement critiques et attentifs vis-à-vis des 
+		conseils qui vous sont donnés pour ces communautés.
+      </p>
+   </div>
+
+
+
+
+</main>
+
+<footer>
+	<p>Copyright &copy; 2023 Compost +.
+		Tous droits réservés.</p>
+</footer>
+
+
+
+</body>
+</html>
+
+
+<!--.each(function(d) {
+                var centroid = arc.centroid(d);
+                svg.append("text")
+                    .attr("text-anchor", "middle")
+                    .attr("x", centroid[0])
+                    .attr("y", centroid[1]);
+                    .text(d.data.name + ": " + d.data.value).attr("transform", function(d) {
+					var pos = outerArc.centroid(d);
+					// Décaler le texte horizontalement vers la droite
+					pos[0] = radius * 0.8 * (midAngle(d) < Math.PI ? 1 : -1);
+					// Faire pivoter le texte de 90 degrés pour l'orienter verticalement
+						return "translate(" + pos + ") rotate(-90)";
+					})
+					.style("text-anchor", "middle")
+					.style("font-size", "4px");
+							});-->
